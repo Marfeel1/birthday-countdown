@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Countdown</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Montserrat', sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: float linear infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .cake-emoji {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #a8d8ea;
+      margin-bottom: 0.5rem;
+    }
+
+    .date-label {
+      font-size: 2rem;
+      color: #b44fff;
+      margin-bottom: 3rem;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    .countdown {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .number {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      transition: transform 0.1s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .number::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px 16px 0 0;
+    }
+
+    .number.pulse {
+      animation: pulse 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .label {
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #a8d8ea;
+      font-weight: 400;
+    }
+
+    .divider {
+      font-size: 3rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.3);
+      align-self: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .message {
+      margin-top: 3rem;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.6);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    .birthday-message {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .birthday-message.show {
+      display: flex;
+    }
+
+    .birthday-message h2 {
+      font-size: 3rem;
+      background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s ease infinite;
+      background-size: 200%;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @media (max-width: 520px) {
+      .number {
+        width: 80px;
+        height: 80px;
+        font-size: 2.2rem;
+        border-radius: 12px;
+      }
+      .countdown {
+        gap: 0.75rem;
+      }
+      .divider {
+        font-size: 2rem;
+      }
+      h1 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <div id="countdown-view">
+      <div class="cake-emoji">🎂</div>
+      <h1>Countdown to your birthday</h1>
+      <p class="date-label">19 May 2026</p>
+
+      <div class="countdown">
+        <div class="unit">
+          <div class="number" id="days">00</div>
+          <div class="label">Days</div>
+        </div>
+        <div class="divider">:</div>
+        <div class="unit">
+          <div class="number" id="hours">00</div>
+          <div class="label">Hours</div>
+        </div>
+        <div class="divider">:</div>
+        <div class="unit">
+          <div class="number" id="minutes">00</div>
+          <div class="label">Minutes</div>
+        </div>
+        <div class="divider">:</div>
+        <div class="unit">
+          <div class="number" id="seconds">00</div>
+          <div class="label">Seconds</div>
+        </div>
+      </div>
+
+      <p class="message" id="message">Get excited — it's almost time!</p>
+    </div>
+
+    <div class="birthday-message" id="birthday-view">
+      <div style="font-size:5rem">🎉🎂🎉</div>
+      <h2>Happy Birthday!</h2>
+      <p style="font-size:1.3rem; color:rgba(255,255,255,0.8)">Wishing you an amazing day!</p>
+    </div>
+  </div>
+
+  <script>
+    // Particles
+    const container = document.getElementById('particles');
+    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#a8d8ea', '#e0aaff'];
+
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 8 + 4;
+      p.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${Math.random() * 100}%;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        animation-duration: ${Math.random() * 15 + 10}s;
+        animation-delay: ${Math.random() * 15}s;
+      `;
+      container.appendChild(p);
+    }
+
+    // Countdown
+    const birthday = new Date('2026-05-19T00:00:00');
+
+    function pad(n) {
+      return String(n).padStart(2, '0');
+    }
+
+    let prevValues = {};
+
+    function pulse(id) {
+      const el = document.getElementById(id);
+      el.classList.remove('pulse');
+      void el.offsetWidth; // reflow
+      el.classList.add('pulse');
+    }
+
+    function updateMessage(days) {
+      const msg = document.getElementById('message');
+      if (days > 90) msg.textContent = 'Mark your calendar!';
+      else if (days > 30) msg.textContent = 'Getting closer!';
+      else if (days > 7)  msg.textContent = 'Almost time — get excited!';
+      else if (days > 1)  msg.textContent = 'Nearly there!';
+      else if (days === 1) msg.textContent = 'Tomorrow is the big day!';
+      else                 msg.textContent = "Today's the day — enjoy it!";
+    }
+
+    function tick() {
+      const now = new Date();
+      const diff = birthday - now;
+
+      if (diff <= 0) {
+        document.getElementById('countdown-view').style.display = 'none';
+        document.getElementById('birthday-view').classList.add('show');
+        return;
+      }
+
+      const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours   = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      const vals = { days, hours, minutes, seconds };
+
+      for (const [key, val] of Object.entries(vals)) {
+        const padded = pad(val);
+        if (prevValues[key] !== padded) {
+          document.getElementById(key).textContent = padded;
+          pulse(key);
+          prevValues[key] = padded;
+        }
+      }
+
+      updateMessage(days);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
